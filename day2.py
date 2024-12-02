@@ -4,27 +4,36 @@ from collections import Counter
 
 # trans={"U":(-1,0),"L":(0,-1), "D":(1,0),"R":(0,1)}
 
-def is_valid_line(differences):
-    return (all(n>0 for n in differences) or all(n<0 for n in differences)) and all(abs(n) in range(1,4) for n in differences)
+def is_nondecreasing(nums):
+    return all(1<=b-a<=3 for a,b in zip(nums,nums[1:]))
+
+def is_nonincreasing(nums):
+    return all(-3<=b-a<=-1 for a,b in zip(nums,nums[1:]))
 
 def part1(data):
     res=0
     for line in data.split("\n"):
         line =list(map(int,line.split()))
-        deltas = [b-a for a,b in zip(line, line[1:])]
-        res+= is_valid_line(deltas)
+        res+= is_nondecreasing(line) or is_nonincreasing(line)
     return res
 
 def part2(data):
     res=0
     for line in data.split("\n"):
-        line = list(map(int,line.split()))
-        for i in range(len(line)+1): # add plus one here to make sure valid lines stay valid
-            chunked = line[:i]+line[i+1:]
-            deltas = [b-a for a,b in zip(chunked, chunked[1:])]
-            if is_valid_line(deltas):
-                res+=1
+        line =list(map(int,line.split()))
+        if is_nondecreasing(line) or is_nonincreasing(line):
+            res+=1
+            continue
+        is_valid=False
+        for i in range(1,len(line)):
+            if line[i]-line[i-1] not in range(1,4):
+                is_valid |= is_nondecreasing(line[:i]+line[i+1:]) or is_nondecreasing(line[:(i-1)]+line[i:])
                 break
+        for i in range(1,len(line)):
+            if line[i]-line[i-1] not in range(-3,0):
+                is_valid |= is_nonincreasing(line[:i]+line[i+1:]) or is_nonincreasing(line[:(i-1)]+line[i:])
+                break
+        res+=is_valid
     return res
 
 
