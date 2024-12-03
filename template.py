@@ -1,7 +1,11 @@
 import time
 from collections import Counter
+import hashlib
+import re
 
 # trans={"U":(-1,0),"L":(0,-1), "D":(1,0),"R":(0,1)}
+def nums(line):
+    return list(map(int,re.findall(r'-?\d+', line)))
 
 def part1(data):
     pass
