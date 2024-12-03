@@ -13,18 +13,16 @@ def part1(data):
     return res
 
 def part2(data):
-    modified=[]
     flag=True 
-    for i in range(len(data)):
-        if data[i:].startswith("do()"): flag=True
-        if data[i:].startswith("don't()"):flag=False
-        if flag: modified.append(data[i])
-    data="".join(modified)
-    pattern = r'mul\((\d+),(\d+)\)'
+    pattern = r"(do\(\)|don't\(\)|mul\((\d+),(\d+)\))"
     matches = re.findall(pattern, data)
     res=0
-    for a,b in matches:
-        res+=int(a)*int(b)
+    for match in matches:
+        a, b, c = match
+        if a =="do()": flag=True
+        elif a=="don't()": flag=False
+        elif flag:
+            res+=int(b)*int(c)
     return res
 
 
