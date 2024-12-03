@@ -3,26 +3,29 @@ from collections import Counter
 import re
 
 # trans={"U":(-1,0),"L":(0,-1), "D":(1,0),"R":(0,1)}
+def nums(line):
+    return list(map(int,re.findall(r'-?\d+', line)))
 
 def part1(data):
-    pattern = r'mul\((\d+),(\d+)\)'
+    pattern = r'mul\(\d+,\d+\)'
     matches = re.findall(pattern, data)
     res=0
-    for a,b in matches:
-        res+=int(a)*int(b)
+    for match in matches:
+        a,b = nums(match)
+        res+=a*b
     return res
 
 def part2(data):
     flag=True 
-    pattern = r"(do\(\)|don't\(\)|mul\((\d+),(\d+)\))"
+    pattern = r"do\(\)|don't\(\)|mul\(\d+,\d+\)"
     matches = re.findall(pattern, data)
     res=0
     for match in matches:
-        a, b, c = match
-        if a =="do()": flag=True
-        elif a=="don't()": flag=False
+        if match =="do()": flag=True
+        elif match=="don't()": flag=False
         elif flag:
-            res+=int(b)*int(c)
+            a, b = nums(match)
+            res+=a*b
     return res
 
 
