@@ -1,5 +1,7 @@
 my advent of code python solutions for year 2024!
 
+If you want to run my code using your input, just clone the repo and run the code for any given day providing the input via stdin.
+
 
 EDIT:
 
