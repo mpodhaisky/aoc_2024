@@ -18,15 +18,21 @@ def part1(data):
     
     for line in seq.split("\n"):
         N = nums(line)
-        for i in range(len(N)-1,-1,-1):
-            for j in range(i):
-                if N[j] in adj[N[i]]:
-                    break
-            else:
-                continue
-            break
-        else:
-            res+=N[len(N)//2]
+        indeg=defaultdict(int)
+        for n in N:
+            for child in adj[n]:
+                if child in N:
+                    indeg[child]+=1
+        q=[n for n in N if indeg[n]==0]
+        seen=set(q)
+        N_set=set(N)
+        for n in q:
+            for child in adj[n]:
+                indeg[child]-=1
+                if indeg[child]==0 and child in N_set and child not in seen:
+                    seen.add(child)
+                    q.append(child)
+        if q==N:res+=q[len(q)//2]
     return res
 
 def part2(data):
@@ -39,25 +45,21 @@ def part2(data):
     
     for line in seq.split("\n"):
         N = nums(line)
-        for i in range(len(N)-1,-1,-1):
-            for j in range(i):
-                if N[j] in adj[N[i]]:
-                    break
-            else:
-                continue
-            break
-        else:
-            indeg=defaultdict(int)
-            for n in N:
-                for child in adj[n]:
-                    if child in N:
-                        indeg[child]+=1
-            q=[n for n in N if indeg[n]==0]
-            for n in q:
-                for m in adj[n]:
-                    indeg[m]-=1
-                q+=[m for m in N if indeg[m]==0 and m not in q]
-            res+=q[len(q)//2]
+        indeg=defaultdict(int)
+        for n in N:
+            for child in adj[n]:
+                if child in N:
+                    indeg[child]+=1
+        q=[n for n in N if indeg[n]==0]
+        seen=set(q)
+        N_set=set(N)
+        for n in q:
+            for child in adj[n]:
+                indeg[child]-=1
+                if indeg[child]==0 and child in N_set and child not in seen:
+                    seen.add(child)
+                    q.append(child)
+        if q!=N:res+=q[len(q)//2]
     return res
 
 
