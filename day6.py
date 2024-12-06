@@ -8,7 +8,6 @@ def nums(line):
     return list(map(int,re.findall(r'-?\d+', line)))
 
 def part1(data):
-    trans={(1,0):(0,-1),(-1,0):(0,1),(0,1):(1,0),(0,-1):(-1,0)}
     grid = data.split("\n")
     M,N=len(grid),len(grid[0])
     sr, sc = 0, 0
@@ -19,17 +18,15 @@ def part1(data):
                 break
     q=[(sr,sc,-1,0)]
     seen=set()
-    path=set()
     for a, b, dr, dc in q:
         if (a,b,dr,dc) in seen: return 0
         seen.add((a,b,dr,dc))
-        path.add((a,b))
         if 0<=a+dr<M and 0<=b+dc<N and grid[a+dr][b+dc]!="#":
             q.append((a+dr,b+dc,dr,dc))
         elif 0<=a+dr<M and 0<=b+dc<N:
-            dr, dc = trans[(dr,dc)]
+            dr, dc = dc, -dr
             q.append((a,b,dr,dc))
-    return len(path)
+    return len(set((a,b) for a,b,_,_ in seen))
         
 
 
