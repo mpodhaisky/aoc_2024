@@ -28,7 +28,7 @@ def part1(data):
             q.append((a+dr,b+dc,dr,dc))
         elif 0<=a+dr<M and 0<=b+dc<N:
             dr, dc = trans[(dr,dc)]
-            q.append((a+dr,b+dc,dr,dc))
+            q.append((a,b,dr,dc))
     return len(path)
         
 
