@@ -3,6 +3,7 @@ from collections import Counter
 import hashlib
 import re
 
+path=set()
 # trans={"U":(-1,0),"L":(0,-1), "D":(1,0),"R":(0,1)}
 def nums(line):
     return list(map(int,re.findall(r'-?\d+', line)))
@@ -26,6 +27,10 @@ def part1(data):
         elif 0<=a+dr<M and 0<=b+dc<N:
             dr, dc = dc, -dr
             q.append((a,b,dr,dc))
+
+    if not path:
+        for a, b , _, _ in seen:
+            path.add((a,b))
     return len(set((a,b) for a,b,_,_ in seen))
         
 
@@ -33,12 +38,11 @@ def part1(data):
 def part2(data):
     grid=list(map(list,data.split("\n")))
     res=0
-    for r, row in enumerate(grid):
-        for c, col in enumerate(row):
-            if col==".":
-                grid[r][c]="#"
-                res+=not part1("\n".join("".join(row) for row in grid))
-                grid[r][c]="."
+    for r, c in path:
+        if grid[r][c]==".":
+            grid[r][c]="#"
+            res+=not part1("\n".join("".join(row) for row in grid))
+            grid[r][c]="."
     return res
 
 
