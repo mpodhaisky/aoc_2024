@@ -7,31 +7,33 @@ from functools import cache
 # trans={"U":(-1,0),"L":(0,-1), "D":(1,0),"R":(0,1)}
 def nums(line):
     return list(map(int,re.findall(r'-?\d+', line)))
-
+N=None
+def dfs(i,s, allow_special_operator):
+    if i==0 and not s: return True
+    if i==0 or not s: return False
+    ret=False
+    if allow_special_operator and str(s).endswith(str(N[i])): ret|=dfs(i-1,int("0"+str(s)[:len(str(s))-len(str(N[i]))]), allow_special_operator)
+    if s%N[i]==0: ret|=dfs(i-1,s//N[i], allow_special_operator)
+    if s-N[i] >=0: ret|= dfs(i-1,s-N[i], allow_special_operator)
+    return ret
 
 def part1(data):
     out=0
     for line in data.split("\n"):
+        global N
         N = nums(line)
         target = N[0]
-        def dfs(i,s):
-            if i==len(N) and s==target: return True
-            if i>=len(N): return False
-            return dfs(i+1,N[i]*s) | dfs(i+1,N[i]+s)
-        if dfs(1,0):
+        if dfs(len(N)-1,target, False):
             out+=target
     return out
         
 def part2(data):
     out=0
     for line in data.split("\n"):
+        global N
         N = nums(line)
         target = N[0]
-        def dfs(i,s):
-            if i==len(N) and s==target: return True
-            if i>=len(N): return False
-            return dfs(i+1,N[i]*s) | dfs(i+1,N[i]+s) | dfs(i+1,int(str(s)+str(N[i])))
-        if dfs(1,0):
+        if dfs(len(N)-1,target, True):
             out+=target
     return out
 
