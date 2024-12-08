@@ -18,14 +18,10 @@ def part1(data):
                 locations[col].append((r,c))
     res=set()
     for antenna in locations:
-        for i in range(len(locations[antenna])):
-            for j in range(i+1,len(locations[antenna])):
-                a, b = locations[antenna][i]
-                c, d = locations[antenna][j]
-                if 0 <= 2*c-a < M and 0<= 2*d-b < N:
+        for (a,b) in locations[antenna]:
+            for (c,d) in locations[antenna]:
+                if (a,b)!=(c,d) and 0 <= 2*c-a < M and 0<= 2*d-b < N:
                     res.add((2*c-a,2*d-b))
-                if 0 <= 2*a-c < M and 0<= 2*b-d < N:
-                    res.add((2*a-c,2*b-d))
     return len(res)
 
 
@@ -40,18 +36,11 @@ def part2(data):
                 locations[col].append((r,c))
     res=set()
     for antenna in locations:
-        for i in range(len(locations[antenna])):
-            for j in range(i+1,len(locations[antenna])):
-                a, b = locations[antenna][i]
-                c, d = locations[antenna][j]
+        for (a,b) in locations[antenna]:
+            for (c,d) in locations[antenna]:
                 for l in range(1000):
-                    if 0 <= c+ (c-a)*l < M and 0<= d + (d-b)*l < N:
+                    if (a,b) != (c,d) and 0 <= c+ (c-a)*l < M and 0<= d + (d-b)*l < N:
                         res.add((c+(c-a)*l,d+(d-b)*l))
-                    else:
-                        break
-                for l in range(1000):
-                    if 0 <= a+ (a-c)*l < M and 0<= b + (b-d)*l < N:
-                        res.add((a+(a-c)*l,b+(b-d)*l))
                     else:
                         break
     return len(res)
