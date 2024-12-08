@@ -16,13 +16,12 @@ def part1(data):
         for c, col in enumerate(row):
             if col!=".":
                 locations[col].append((r,c))
-    res=set()
     for antenna in locations:
         for (a,b) in locations[antenna]:
             for (c,d) in locations[antenna]:
                 if (a,b)!=(c,d) and 0 <= 2*c-a < M and 0<= 2*d-b < N:
-                    res.add((2*c-a,2*d-b))
-    return len(res)
+                    grid[2*c-a][2*d-b] = "#"
+    return sum(row.count("#") for row in grid)
 
 
 def part2(data):
@@ -34,16 +33,15 @@ def part2(data):
         for c, col in enumerate(row):
             if col!=".":
                 locations[col].append((r,c))
-    res=set()
     for antenna in locations:
         for (a,b) in locations[antenna]:
             for (c,d) in locations[antenna]:
                 for l in range(1000):
                     if (a,b) != (c,d) and 0 <= c+ (c-a)*l < M and 0<= d + (d-b)*l < N:
-                        res.add((c+(c-a)*l,d+(d-b)*l))
+                        grid[c+(c-a)*l][d+(d-b)*l]="#"
                     else:
                         break
-    return len(res)
+    return sum(row.count("#") for row in grid)
 
 
 if __name__ == "__main__":
