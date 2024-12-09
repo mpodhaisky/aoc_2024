@@ -1,5 +1,6 @@
 import time
-from collections import Counter
+from collections import Counter, defaultdict, deque
+from heapq import heapify, heappush, heappop
 import hashlib
 import re
 
@@ -8,43 +9,56 @@ def nums(line):
     return list(map(int,re.findall(r'-?\d+', line)))
 
 def part1(data):
-    res=[]
-    for i,c in enumerate(data):
-        if i%2==0: res+= [str(i//2) for _ in range(int(c))]
-        else: res+=list(int(c)*".")
-    
-    lo,hi = 0,len(res)-1
-    while lo <hi:
-        if res[hi]==".": hi-=1
-        elif res[lo]!=".": lo+=1
-        else: res[hi],res[lo]=res[lo],res[hi]
-    
-    return sum(i*int(c) for i, c in enumerate(res) if c!=".")
-    
-
-def part2(data):
-    res=""
-    for i,c in enumerate(data):
-        if i%2==0: res+= chr((i//2)+100)*int(c)
-        else: res+=int(c)*"."
-    ops=[]
+    ops=[] 
+    gaps=deque()
     margin=0
     for i,c in enumerate(data):
         if i%2==0: 
-            ops.append((chr((i//2)+100),margin,int(c)))
+            ops.append((i//2,margin,int(c)))
+        else:
+            gaps.append((margin,int(c)))
         margin+=int(c)
-    res=list(res)
-    for c, i, l in ops[::-1]:
-        for j in range(i-l+1):
-            if "".join(res[j:j+l])=="."*l:
-                res[j:j+l],res[i:i+l]=res[i:i+l],res[j:j+l]
-                break
+    res=0
+    while ops:
+        id, offset, length = ops.pop()
+        if gaps[0][0]>=offset:
+            res+=sum(range(offset,offset+length))*id
+        else:
+            gap_index, gap_length = gaps.popleft()
+            res+=sum(range(gap_index,gap_index+min(gap_length,length)))*id
+            if gap_length > length:
+                gaps.appendleft((gap_index+length,gap_length-length))
+            elif length>gap_length:
+                ops.append((id,offset,length-gap_length))
+    return res
 
-    return sum(i*(ord(c)-100) for i, c in enumerate(res) if c!=".")
+def part2(data):
+    ops=[] 
+    gaps=defaultdict(list)
+    margin=0
+    for i,c in enumerate(data):
+        if i%2==0: 
+            ops.append((i//2,margin,int(c)))
+        else:
+            gaps[int(c)].append(margin)
+        margin+=int(c)
+    res=0
+    for id, offset, length in ops[::-1]:
+        gap_offset=gap_length=float("inf")
+        for dl in range(length,10):
+            while gaps[dl] and gaps[dl][0]>=offset: heappop(gaps[dl])
+            if gaps[dl] and gaps[dl][0]<gap_offset:gap_offset, gap_length = gaps[dl][0], dl
+        if gap_offset!=float("inf"):
+            heappop(gaps[gap_length])
+            heappush(gaps[gap_length-length],gap_offset+length)
+            res+=sum(range(gap_offset,gap_offset+length))*id
+        else:
+            res+=sum(range(offset,offset+length))*id
+    return res
 
 if __name__ == "__main__":
     data = open(0).read().rstrip()
-    t1 = time.time()
+    t1 = time.time()  
     res1 = part1(data)
     t2 = time.time()
     res2 = part2(data)
