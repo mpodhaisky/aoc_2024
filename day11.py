@@ -9,22 +9,21 @@ def nums(line):
     return list(map(int,re.findall(r'-?\d+', line)))
 
 @cache
-def dp(n,t,deadline):
-    if t>=deadline: return 0
-    elif n==0: return dp(1,t+1,deadline)
+def dp(n,t):
+    if t==0: return 1
+    elif n==0: return dp(1,t-1)
     elif len(str(n))%2==0: 
             s=str(n)
             l=len(s)
-            return 1+dp(int(s[:l//2]),t+1,deadline) + dp(int(s[l//2:]),t+1,deadline)
-    else: return dp(n*2024,t+1,deadline)
+            return dp(int(s[:l//2]),t-1) + dp(int(s[l//2:]),t-1)
+    else: return dp(n*2024,t-1)
 
 def part1(data):
-    N = nums(data)
-    return sum(1+dp(n,0,25) for n in N)
+    return sum(dp(n,25) for n in nums(data))
+    
     
 def part2(data):
-    N = nums(data)
-    return sum(1+dp(n,0,75) for n in N)
+    return sum(dp(n,75) for n in nums(data))
 
 
 
