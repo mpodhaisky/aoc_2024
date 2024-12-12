@@ -1,5 +1,5 @@
 import time
-from collections import Counter
+from collections import Counter, defaultdict
 import hashlib
 import re
 
@@ -7,58 +7,93 @@ import re
 def nums(line):
     return list(map(int,re.findall(r'-?\d+', line)))
 
+
 def part1(data):
-    pass
+    grid = list(map(list,data.split("\n")))
+    M, N = len(grid), len(grid[0])
+    
+    Parent=list(range(M*N))
+
+
+    def find(x):
+        if Parent[x]!=x:
+            return find(Parent[x])
+        else: return x
+    
+    def union(x,y):
+        Parent[find(y)]=find(x)
+    
+    for r in range(M):
+        for c in range(N):
+            for dr, dc in ((1,0),(0,1),(0,-1),(-1,0)):
+                if 0<=r+dr<M and 0<=c+dc<N and grid[r][c]==grid[r+dr][c+dc]:
+                    union((r+dr)*N + c+dc,r*N + c)
+    tiles=defaultdict(list)
+    perimeter=defaultdict(list)
+    for i , n in enumerate(find(n) for n in Parent):
+        r, c = i//N, i%M
+        for dr, dc in ((1,0),(0,1),(0,-1),(-1,0)):
+            if not (0<=r+dr<M and 0<=c+dc<N and grid[r][c]==grid[r+dr][c+dc]):
+                perimeter[n].append((r,c,dr,dc))
+        tiles[n].append((r,c))
+
+    return sum(len(perimeter[n])*len(tiles[n]) for n in tiles)
+
 
 def part2(data):
     grid = list(map(list,data.split("\n")))
     M, N = len(grid), len(grid[0])
-    seen=set()
-    def fill(r,c, character):
-        if not 0<=r<M or not 0<=c<N or (r,c) in seen or grid[r][c] != character: return (0,[])
-        seen.add((r,c))
-        perimeter = []
-        for dr, dc in ((1,0),(-1,0),(0,1),(0,-1)):
-            if not (0<=r+dr<M and 0<=c+dc<N) or grid[r+dr][c+dc]!=character:
-                perimeter.append((r,c,dr,dc))
-        rra,rrb=0,perimeter
-        for (a, b) in (fill(r+1,c,character),fill(r,c+1,character),fill(r-1,c,character),fill(r,c-1,character)):
-            rra+=a
-            rrb+=b
-        return (rra+1,rrb)
+    
+    Parent=list(range(M*N))
 
 
-    res=0
+    def find(x):
+        if Parent[x]!=x:
+            return find(Parent[x])
+        else: return x
+    
+    def union(x,y):
+        Parent[find(y)]=find(x)
+    
     for r in range(M):
         for c in range(N):
-            if (r,c) not in seen:
-                area, perimeter = fill(r,c, grid[r][c])
-                idx={}
-                for i, n in enumerate(perimeter):
-                    idx[n]=i
-                perimeter=set(perimeter)
-                Parent =list(range(len(perimeter)))
+            for dr, dc in ((1,0),(0,1),(0,-1),(-1,0)):
+                if 0<=r+dr<M and 0<=c+dc<N and grid[r][c]==grid[r+dr][c+dc]:
+                    union((r+dr)*N + c+dc,r*N + c)
+    tiles=defaultdict(list)
+    perimeter=defaultdict(list)
+    for i , n in enumerate(find(n) for n in Parent):
+        r, c = i//N, i%M
+        for dr, dc in ((1,0),(0,1),(0,-1),(-1,0)):
+            if not (0<=r+dr<M and 0<=c+dc<N and grid[r][c]==grid[r+dr][c+dc]):
+                perimeter[n].append((r,c,dr,dc))
+        tiles[n].append((r,c))
 
-                def find(x):
-                    if Parent[x]!=x:
-                        return find(Parent[x])
-                    else: return x
-                
-                def union(x,y):
-                    try:
-                        Parent[find(idx[y])]=find(idx[x])
-                    except:
-                        pass
-                visited=set()
-                for r, c, _, _ in perimeter:
-                    for (a, b) in ((r,c,-1,0),(r,c-1,-1,0)),((r,c,-1,0),(r,c+1,-1,0)),((r,c,1,0),(r,c-1,1,0)),((r,c,1,0),(r,c+1,1,0)),((r,c,0,-1),(r-1,c,0,-1)),((r,c,0,-1),(r+1,c,0,-1)),((r,c,0,1),(r-1,c,0,1)),((r,c,0,1),(r+1,c,0,1)):
-                        if (b, a) not in visited:
-                            union(a,b)
-                            
-                sides = len(set(find(n) for n in Parent))
-                res+=sides * area
-                    
-    return res
+    sides=defaultdict(list)
+
+    for group, border in perimeter.items():
+        idx={}
+        Parent=list(range(len(border)))
+
+        def find(x):
+            if Parent[x]!=x:
+                return find(Parent[x])
+            else: return x
+        
+        def union(x,y):
+            Parent[find(y)]=find(x)
+        
+        for i,n in enumerate(border):
+            idx[n]=i
+        
+        for r, c, dr, dc in border:
+            if (r+dc, c-dr, dr, dc) in idx:
+                union(idx[(r+dc, c-dr, dr, dc)],idx[(r, c, dr, dc)])
+            if (r-dc, c+dr, dr, dc) in idx:
+                union(idx[(r-dc, c+dr, dr, dc)],idx[(r, c, dr, dc)])
+        sides[group] = list(set(find(n) for n in Parent))
+
+    return sum(len(sides[n])*len(tiles[n]) for n in tiles)
 
 
 if __name__ == "__main__":
