@@ -13,9 +13,8 @@ def part1(data):
     res=Counter()
     for line in data.split("\n"):
         c, r, dc, dr= nums(line)
-        for _ in range(100):
-            r= (r+dr)%M
-            c= (c+dc)%N
+        r= (r+100*dr)%M
+        c= (c+100*dc)%N
         if c==N//2 or r==M//2: continue
         res[(0<=c<N//2,0<=r<M//2)]+=1
     return prod(res.values())
@@ -24,26 +23,16 @@ def part1(data):
 
 def part2(data):
     M,N = 103, 101
-    robots=[]
-    for line in data.split("\n"):
-        c, r, dc, dr = nums(line)
-        robots.append((r,c,dr,dc))
-    time=0
-    maxcascade=0
-    res=0
-    for _ in range(10000):
-        for i, (r,c,dr,dc) in enumerate(robots):
-            robots[i]=((r+dr)%M,(c+dc)%N,dr,dc)
-        time+=1
-        
-        robot_set = set((r,c) for r,c,_,_ in robots)
-        cascade=0
-        for r,c in robot_set:
-            cascade+=(r+1,c-1) in robot_set
-        if maxcascade < cascade:
-            maxcascade=cascade
-            res=time
-    return res
+    robot_count = len(data.split("\n"))
+    for time in range(M*N):
+        seen=set()
+        for line in data.split("\n"):
+            c, r, dc, dr= nums(line)
+            r= (r+time*dr)%M
+            c= (c+time*dc)%N
+            seen.add((r,c))
+        if len(seen)==robot_count:
+            return time
 
 
 if __name__ == "__main__":
