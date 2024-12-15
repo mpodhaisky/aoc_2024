@@ -4,6 +4,7 @@ import hashlib
 import re
 
 # trans={"U":(-1,0),"L":(0,-1), "D":(1,0),"R":(0,1)}
+# trans={"^":(-1,0),"v":(1,0),"<":(0,-1),">":(0,1)}
 def nums(line):
     return list(map(int,re.findall(r'-?\d+', line)))
 
@@ -22,7 +23,7 @@ def part1(data):
         if op == "\n": continue
         dr, dc = trans[op]
         for l in range(1,max(M,N)):
-            if not (0<=sr+dr*l<M and 0<=sc+dc*l<N) or grid[sr+dr*l][sc+dc*l]=="#": break
+            if grid[sr+dr*l][sc+dc*l]=="#": break
             if grid[sr+dr*l][sc+dc*l]==".":
                 grid[sr+dr*l][sc+dc*l], grid[sr+dr][sc+dc]=grid[sr+dr][sc+dc],grid[sr+dr*l][sc+dc*l]
                 grid[sr+dr][sc+dc],grid[sr][sc] = grid[sr][sc],grid[sr+dr][sc+dc]
@@ -57,7 +58,7 @@ def part2(data):
             if expanded_grid[r][c]=="@":
                 sr=r
                 sc=c
-                
+
     for op in moves:
         if op == "\n": continue
         dr, dc = trans[op]
@@ -67,10 +68,9 @@ def part2(data):
             if expanded_grid[r+dr][c+dc]=="#": break
             if expanded_grid[r+dr][c+dc] in "[]" and (r+dr,c+dc) not in seen:
                 q.append((r+dr,c+dc))
-                seen.add((r+dr,c+dc))
-                if (dr,dc) in ((1,0),(-1,0)):
-                    q.append((r+dr,c+dc+value[expanded_grid[r+dr][c+dc]]))
-                    seen.add((r+dr,c+dc+value[expanded_grid[r+dr][c+dc]]))
+                q.append((r+dr,c+dc+value[expanded_grid[r+dr][c+dc]]))
+                seen.add((r+dr,c+dc))    
+                seen.add((r+dr,c+dc+value[expanded_grid[r+dr][c+dc]]))
         else:
             for r, c in q[::-1]:
                 expanded_grid[r+dr][c+dc],expanded_grid[r][c] = expanded_grid[r][c],expanded_grid[r+dr][c+dc]
