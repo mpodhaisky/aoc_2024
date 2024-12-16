@@ -22,8 +22,6 @@ def part1(data):
     while q:
         cost, r, c, dr, dc = heapq.heappop(q)
         if seen[(r,c, dr, dc)] != cost: continue
-        if (r,c)==(tr,tc): return cost
-        
         if 0<=r+dr<M and 0<=c+dc<N and grid[r+dr][c+dc]!="#" and ((r+dr,c+dc,dr,dc) not in seen or seen[(r+dr,c+dc,dr,dc)]>cost+1):
             seen[(r+dr,c+dc,dr,dc)] =cost+1
             heapq.heappush(q,(cost+1,r+dr,c+dc,dr,dc))
@@ -32,7 +30,9 @@ def part1(data):
             if (r,c,ddr,ddc) not in seen or seen[(r,c,ddr,ddc)] > cost +1000:
                 seen[(r,c,ddr,ddc)]=cost+1000
                 heapq.heappush(q,(cost+1000,r,c,ddr,ddc))
-    return -1
+    return min(seen.get((tr,tc,dr,dc),float("inf")) for dr, dc in ((1,0),(-1,0),(0,1),(0,-1)))
+
+
 def part2(data):
     grid = list(map(list,data.split("\n")))
     M,N = len(grid), len(grid[0])
@@ -46,13 +46,9 @@ def part2(data):
     q=[(0,sr,sc,0,1)]
     seen={(sr,sc,0,1):0}
     parent=defaultdict(list)
-    target=set()
     while q:
         cost, r, c, dr, dc = heapq.heappop(q)
         if seen[(r,c, dr, dc)] != cost: continue
-        if (r,c)==(tr,tc) and (not target or seen[min(target)] == cost): 
-            target.add((r,c,dr,dc))
-            continue
         if 0<=r+dr<M and 0<=c+dc<N and grid[r+dr][c+dc]!="#" and ((r+dr,c+dc,dr,dc) not in seen or seen[(r+dr,c+dc,dr,dc)]>=cost+1):
             if (r+dr,c+dc,dr,dc) not in seen or seen[(r+dr,c+dc,dr,dc)]>cost+1:
                 parent[(r+dr,c+dc,dr,dc)]=[(r,c,dr,dc)]
@@ -71,19 +67,17 @@ def part2(data):
                     continue
                 seen[(r,c,ddr,ddc)]=cost+1000
                 heapq.heappush(q,(cost+1000,r,c,ddr,ddc))
-    res=set()
-    def dfs(node, seen):
-        nonlocal res
-        if node == (sr,sc,0,1):
-            res|=seen
-            return
+    
+    q=[(tr,tc,dr,dc) for dr, dc in ((1,0),(-1,0),(0,-1),(0,1))]
+    m=min(q,key=lambda x: seen.get(x,float("inf")))
+    q= [node for node in q if seen.get(node,float("inf")==m)]
+    seen=set(q)
+    for node in q:
         for p in parent[node]:
-            dfs(p,seen|{node})
-
-    for t in target:
-        dfs(t,set())
-    print(sorted({(a,b) for a, b, _,_ in res}))
-    return len({(a,b) for a, b, _,_ in res})
+            if p not in seen:
+                seen.add(p)
+                q.append(p)
+    return len({(a,b) for a, b, _,_ in q})
     
 
 if __name__ == "__main__":
