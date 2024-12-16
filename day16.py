@@ -1,0 +1,101 @@
+import time
+from collections import Counter, defaultdict
+import hashlib
+import re
+import heapq
+# trans={"U":(-1,0),"L":(0,-1), "D":(1,0),"R":(0,1)}
+def nums(line):
+    return list(map(int,re.findall(r'-?\d+', line)))
+
+def part1(data):
+    grid = list(map(list,data.split("\n")))
+    M,N = len(grid), len(grid[0])
+    sr=sc=tr=tc=None
+    for r in range(M):
+        for c in range(N):
+            if grid[r][c]=="S":
+                sr,sc=r,c
+            if grid[r][c]=="E":
+                tr,tc=r,c
+    q=[(0,sr,sc,0,1)]
+    seen={(sr,sc,0,1):0}
+    while q:
+        cost, r, c, dr, dc = heapq.heappop(q)
+        if seen[(r,c, dr, dc)] != cost: continue
+        if (r,c)==(tr,tc): return cost
+        
+        if 0<=r+dr<M and 0<=c+dc<N and grid[r+dr][c+dc]!="#" and ((r+dr,c+dc,dr,dc) not in seen or seen[(r+dr,c+dc,dr,dc)]>cost+1):
+            seen[(r+dr,c+dc,dr,dc)] =cost+1
+            heapq.heappush(q,(cost+1,r+dr,c+dc,dr,dc))
+        
+        for ddr, ddc in ((dc, -dr), (-dc,dr)):
+            if (r,c,ddr,ddc) not in seen or seen[(r,c,ddr,ddc)] > cost +1000:
+                seen[(r,c,ddr,ddc)]=cost+1000
+                heapq.heappush(q,(cost+1000,r,c,ddr,ddc))
+    return -1
+def part2(data):
+    grid = list(map(list,data.split("\n")))
+    M,N = len(grid), len(grid[0])
+    sr=sc=tr=tc=None
+    for r in range(M):
+        for c in range(N):
+            if grid[r][c]=="S":
+                sr,sc=r,c
+            if grid[r][c]=="E":
+                tr,tc=r,c
+    q=[(0,sr,sc,0,1)]
+    seen={(sr,sc,0,1):0}
+    parent=defaultdict(list)
+    target=set()
+    while q:
+        cost, r, c, dr, dc = heapq.heappop(q)
+        if seen[(r,c, dr, dc)] != cost: continue
+        if (r,c)==(tr,tc) and (not target or seen[min(target)] == cost): 
+            target.add((r,c,dr,dc))
+            continue
+        if 0<=r+dr<M and 0<=c+dc<N and grid[r+dr][c+dc]!="#" and ((r+dr,c+dc,dr,dc) not in seen or seen[(r+dr,c+dc,dr,dc)]>=cost+1):
+            if (r+dr,c+dc,dr,dc) not in seen or seen[(r+dr,c+dc,dr,dc)]>cost+1:
+                parent[(r+dr,c+dc,dr,dc)]=[(r,c,dr,dc)]
+            else:
+                parent[(r+dr,c+dc,dr,dc)].append((r,c,dr,dc))
+                continue
+            seen[(r+dr,c+dc,dr,dc)] =cost+1
+            heapq.heappush(q,(cost+1,r+dr,c+dc,dr,dc))
+        
+        for ddr, ddc in ((dc, -dr), (-dc,dr)):
+            if (r,c,ddr,ddc) not in seen or seen[(r,c,ddr,ddc)] >= cost +1000:
+                if (r,c,ddr,ddc) not in seen or seen[(r,c,ddr,ddc)] > cost+1000:
+                    parent[(r,c,ddr,ddc)]=[(r,c,dr,dc)]
+                else:
+                    parent[(r,c,ddr,ddc)].append((r,c,dr,dc))
+                    continue
+                seen[(r,c,ddr,ddc)]=cost+1000
+                heapq.heappush(q,(cost+1000,r,c,ddr,ddc))
+    res=set()
+    def dfs(node, seen):
+        nonlocal res
+        if node == (sr,sc,0,1):
+            res|=seen
+            return
+        for p in parent[node]:
+            dfs(p,seen|{node})
+
+    for t in target:
+        dfs(t,set())
+    print(sorted({(a,b) for a, b, _,_ in res}))
+    return len({(a,b) for a, b, _,_ in res})
+    
+
+if __name__ == "__main__":
+    data = open(0).read().rstrip()
+    t1 = time.time()
+    res1 = part1(data)
+    t2 = time.time()
+    res2 = part2(data)
+    t3 = time.time()
+    print("----------------Part 1-----------------")
+    print(f"time: {(t2-t1)*1000}".split(".")[0] + " ms")
+    print(f"flag: {res1}")
+    print("----------------Part 2-----------------")
+    print(f"time: {(t3-t2)*1000}".split(".")[0] + " ms")
+    print(f"flag: {res2}")
