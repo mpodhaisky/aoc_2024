@@ -49,24 +49,20 @@ def part2(data):
     while q:
         cost, r, c, dr, dc = heapq.heappop(q)
         if seen[(r,c, dr, dc)] != cost: continue
-        if grid[r+dr][c+dc]!="#" and seen.get((r+dr,c+dc,dr,dc),float("inf"))>=cost+1:
-            if seen.get((r+dr,c+dc,dr,dc),float("inf"))>cost+1:
-                parent[(r+dr,c+dc,dr,dc)]=[(r,c,dr,dc)]
-            else:
-                parent[(r+dr,c+dc,dr,dc)].append((r,c,dr,dc))
-                continue
+        if grid[r+dr][c+dc]!="#" and seen.get((r+dr,c+dc,dr,dc),float("inf"))>cost+1:
+            parent[(r+dr,c+dc,dr,dc)]=[(r,c,dr,dc)]
             seen[(r+dr,c+dc,dr,dc)] =cost+1
             heapq.heappush(q,(cost+1,r+dr,c+dc,dr,dc))
+        elif seen.get((r+dr,c+dc,dr,dc),float("inf"))==cost+1:
+            parent[(r+dr,c+dc,dr,dc)].append((r,c,dr,dc))
         
         for ddr, ddc in ((dc, -dr), (-dc,dr)):
-            if seen.get((r,c,ddr,ddc),float("inf")) >= cost +1000:
-                if seen.get((r,c,ddr,ddc),float("inf")) > cost+1000:
-                    parent[(r,c,ddr,ddc)]=[(r,c,dr,dc)]
-                else:
-                    parent[(r,c,ddr,ddc)].append((r,c,dr,dc))
-                    continue
+            if seen.get((r,c,ddr,ddc),float("inf")) > cost+1000:
+                parent[(r,c,ddr,ddc)]=[(r,c,dr,dc)]
                 seen[(r,c,ddr,ddc)]=cost+1000
                 heapq.heappush(q,(cost+1000,r,c,ddr,ddc))
+            elif seen.get((r,c,ddr,ddc),float("inf")) == cost+1000:
+                parent[(r,c,ddr,ddc)].append((r,c,dr,dc))
     
     q=[(tr,tc,dr,dc) for dr, dc in ((1,0),(-1,0),(0,-1),(0,1))]
     m=min(q,key=lambda x: seen.get(x,float("inf")))
