@@ -22,12 +22,12 @@ def part1(data):
     while q:
         cost, r, c, dr, dc = heapq.heappop(q)
         if seen[(r,c, dr, dc)] != cost: continue
-        if grid[r+dr][c+dc]!="#" and ((r+dr,c+dc,dr,dc) not in seen or seen[(r+dr,c+dc,dr,dc)]>cost+1):
+        if grid[r+dr][c+dc]!="#" and seen.get((r+dr,c+dc,dr,dc),float("inf"))>cost+1:
             seen[(r+dr,c+dc,dr,dc)] =cost+1
             heapq.heappush(q,(cost+1,r+dr,c+dc,dr,dc))
         
         for ddr, ddc in ((dc, -dr), (-dc,dr)):
-            if (r,c,ddr,ddc) not in seen or seen[(r,c,ddr,ddc)] > cost +1000:
+            if seen.get((r,c,ddr,ddc),float("inf"))> cost +1000:
                 seen[(r,c,ddr,ddc)]=cost+1000
                 heapq.heappush(q,(cost+1000,r,c,ddr,ddc))
     return min(seen.get((tr,tc,dr,dc),float("inf")) for dr, dc in ((1,0),(-1,0),(0,1),(0,-1)))
@@ -49,8 +49,8 @@ def part2(data):
     while q:
         cost, r, c, dr, dc = heapq.heappop(q)
         if seen[(r,c, dr, dc)] != cost: continue
-        if grid[r+dr][c+dc]!="#" and ((r+dr,c+dc,dr,dc) not in seen or seen[(r+dr,c+dc,dr,dc)]>=cost+1):
-            if (r+dr,c+dc,dr,dc) not in seen or seen[(r+dr,c+dc,dr,dc)]>cost+1:
+        if grid[r+dr][c+dc]!="#" and seen.get((r+dr,c+dc,dr,dc),float("inf"))>=cost+1:
+            if seen.get((r+dr,c+dc,dr,dc),float("inf"))>cost+1:
                 parent[(r+dr,c+dc,dr,dc)]=[(r,c,dr,dc)]
             else:
                 parent[(r+dr,c+dc,dr,dc)].append((r,c,dr,dc))
@@ -59,8 +59,8 @@ def part2(data):
             heapq.heappush(q,(cost+1,r+dr,c+dc,dr,dc))
         
         for ddr, ddc in ((dc, -dr), (-dc,dr)):
-            if (r,c,ddr,ddc) not in seen or seen[(r,c,ddr,ddc)] >= cost +1000:
-                if (r,c,ddr,ddc) not in seen or seen[(r,c,ddr,ddc)] > cost+1000:
+            if seen.get((r,c,ddr,ddc),float("inf")) >= cost +1000:
+                if seen.get((r,c,ddr,ddc),float("inf")) > cost+1000:
                     parent[(r,c,ddr,ddc)]=[(r,c,dr,dc)]
                 else:
                     parent[(r,c,ddr,ddc)].append((r,c,dr,dc))
