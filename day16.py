@@ -22,7 +22,7 @@ def part1(data):
     while q:
         cost, r, c, dr, dc = heapq.heappop(q)
         if seen[(r,c, dr, dc)] != cost: continue
-        if 0<=r+dr<M and 0<=c+dc<N and grid[r+dr][c+dc]!="#" and ((r+dr,c+dc,dr,dc) not in seen or seen[(r+dr,c+dc,dr,dc)]>cost+1):
+        if grid[r+dr][c+dc]!="#" and ((r+dr,c+dc,dr,dc) not in seen or seen[(r+dr,c+dc,dr,dc)]>cost+1):
             seen[(r+dr,c+dc,dr,dc)] =cost+1
             heapq.heappush(q,(cost+1,r+dr,c+dc,dr,dc))
         
@@ -49,7 +49,7 @@ def part2(data):
     while q:
         cost, r, c, dr, dc = heapq.heappop(q)
         if seen[(r,c, dr, dc)] != cost: continue
-        if 0<=r+dr<M and 0<=c+dc<N and grid[r+dr][c+dc]!="#" and ((r+dr,c+dc,dr,dc) not in seen or seen[(r+dr,c+dc,dr,dc)]>=cost+1):
+        if grid[r+dr][c+dc]!="#" and ((r+dr,c+dc,dr,dc) not in seen or seen[(r+dr,c+dc,dr,dc)]>=cost+1):
             if (r+dr,c+dc,dr,dc) not in seen or seen[(r+dr,c+dc,dr,dc)]>cost+1:
                 parent[(r+dr,c+dc,dr,dc)]=[(r,c,dr,dc)]
             else:
