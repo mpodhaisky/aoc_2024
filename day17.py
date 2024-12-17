@@ -29,7 +29,7 @@ def my_program(A,program):
 def part1(data):
     a, b = data.split("\n\n")
     program = list(map(int,b.split(": ")[1].split(",")))
-    A=nums(a)[0]
+    A=164540892147389
     out=[]
     while A:
         out.append(my_program(A,program))
@@ -40,18 +40,15 @@ def part1(data):
 def part2(data):
     _, b = data.split("\n\n")
     program = list(map(int,b.split(": ")[1].split(",")))
-    cur = 0
-    for i in range(len(program)):
+    def dfs(cur, i):
+        if i>=len(program): return [cur]
+        out=[]
         cur <<=3
-        for j in range(2**3):
+        for j in range(8):
             if my_program(cur+j,program)==program[-i-1]:
-                cur+=j
-                break
-    return cur
-
-
-        
-
+                out+=(dfs(cur+j,i+1))
+        return out
+    return min(dfs(0,0))
 
 if __name__ == "__main__":
     data = open(0).read().rstrip()
