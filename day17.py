@@ -32,9 +32,9 @@ def part1(data):
     A=nums(a)[0]
     out=[]
     while A:
-        out.append(my_program(A,program))
+        out.append(str(my_program(A,program)))
         A>>=3
-    return out
+    return ",".join(out)
 
 
 def part2(data):
