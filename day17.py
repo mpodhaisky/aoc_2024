@@ -29,7 +29,7 @@ def my_program(A,program):
 def part1(data):
     a, b = data.split("\n\n")
     program = list(map(int,b.split(": ")[1].split(",")))
-    A=164540892147389
+    A=nums(a)[0]
     out=[]
     while A:
         out.append(my_program(A,program))
