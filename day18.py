@@ -31,38 +31,26 @@ def part1(data):
 
 def part2(data):
     M = 71
-    blocked=[]
-    for line in data.split("\n"):
-        blocked.append(tuple(nums(line)))
-    Parent=list(range(M*M))
-    
-    def find(x):
-        if Parent[x]!=x:
-            return find(Parent[x])
-        else: return x
-    
-    def union(x,y):
-        Parent[find(y)]=find(x)
-    
-    for r in range(M):
-        for c in range(M):
-            if (r,c) in blocked: continue
-            for dr, dc in ((-1,0),(0,-1)):
-                nr=r+dr
-                nc=c+dc
-                if 0<=nr<M and 0<=nc<M and (nr,nc) not in blocked:
-                    union(r*M+c,nr*M+nc)
+    blocked=[tuple(nums(line)) for line in data.split("\n")]
     blocked_set=set(blocked)
+    seen={(0,0)}
+    def fill(r,c):
+        for dr, dc in adj4:
+            if (r+dr,c+dc) not in seen and (r+dr,c+dc) not in blocked_set and (0<=r+dr<M and 0<=c+dc<M):
+                seen.add((r+dr,c+dc))
+                fill(r+dr,c+dc)
+    fill(0,0)
     while blocked:
-        r,c=blocked.pop()
+        r,c = blocked.pop()
         blocked_set.remove((r,c))
         for dr, dc in adj4:
-            nr = r+dr
-            nc = c+dc
-            if 0<=nr<M and 0<=nc<M and (nr,nc) not in blocked_set:
-                union(nr*M+nc,r*M+c)
-        if find(Parent[0])==find(Parent[-1]):
+            if (r+dr,c+dc) in seen:
+                seen.add((r,c))
+                fill(r,c)
+                break
+        if (M-1,M-1) in seen:
             return f"{r},{c}"
+
     
 
 
