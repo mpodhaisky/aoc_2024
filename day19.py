@@ -4,6 +4,7 @@ import hashlib
 import re
 import math
 import heapq
+from functools import reduce
 
 adj4 = [(-1,0),(0,1),(1,0),(0,-1)]
 adj8 = [(-1,0),(-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1)]
@@ -15,15 +16,23 @@ def nums(line):
 def part1(data):
     a, b = data.split("\n\n")
     a = a.split(", ")
+    T= lambda: defaultdict(T)
+    trie = T()
+    for word in a:
+        reduce(dict.__getitem__,word,trie)["is_word"]=True
     b=b.split("\n")
     res=0
     for line in b:
-        dp=[0]*(len(line)+1)
-        dp[0]=1
+        dp=[1]+[0]*len(line)
         for i in range(len(line)):
-            for word in a:
-                if line[i:].startswith(word):
-                    dp[i+len(word)]|=dp[i]
+            cur=trie
+            for j in range(i, len(line)):
+                if line[j] not in cur:
+                    break
+                else:
+                    cur=cur[line[j]]
+                if cur["is_word"]:
+                    dp[j+1]|=dp[i]
         res+=dp[-1]
     return res
 
@@ -31,15 +40,23 @@ def part1(data):
 def part2(data):
     a, b = data.split("\n\n")
     a = a.split(", ")
+    T= lambda: defaultdict(T)
+    trie = T()
+    for word in a:
+        reduce(dict.__getitem__,word,trie)["is_word"]=True
     b=b.split("\n")
     res=0
     for line in b:
-        dp=[0]*(len(line)+1)
-        dp[0]=1
+        dp=[1]+[0]*len(line)
         for i in range(len(line)):
-            for word in a:
-                if line[i:].startswith(word):
-                    dp[i+len(word)]+=dp[i]
+            cur=trie
+            for j in range(i, len(line)):
+                if line[j] not in cur:
+                    break
+                else:
+                    cur=cur[line[j]]
+                if cur["is_word"]:
+                    dp[j+1]+=dp[i]
         res+=dp[-1]
     return res
 
