@@ -4,10 +4,13 @@ import hashlib
 import re
 import math
 import heapq
-from functools import reduce
+from functools import reduce, cache
+import ahocorasick
 
 adj4 = [(-1,0),(0,1),(1,0),(0,-1)]
 adj8 = [(-1,0),(-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1)]
+
+
 
 # trans={"U":(-1,0),"L":(0,-1), "D":(1,0),"R":(0,1)}
 def nums(line):
@@ -15,48 +18,32 @@ def nums(line):
 
 def part1(data):
     a, b = data.split("\n\n")
-    a = a.split(", ")
-    T= lambda: defaultdict(T)
-    trie = T()
-    for word in a:
-        reduce(dict.__getitem__,word,trie)["is_word"]=True
-    b=b.split("\n")
     res=0
-    for line in b:
-        dp=[1]+[0]*len(line)
-        for i in range(len(line)):
-            cur=trie
-            for j in range(i, len(line)):
-                if line[j] not in cur:
-                    break
-                else:
-                    cur=cur[line[j]]
-                if cur["is_word"]:
-                    dp[j+1]|=dp[i]
+    automaton = ahocorasick.Automaton()
+    for word in a.split(", "):
+        automaton.add_word(word,(len(word),word))
+    automaton.make_automaton()
+    for line in b.split("\n"):
+        dp = [1]+[0]*len(line)
+        for hi , (_,word) in automaton.iter(line):
+            lo = hi - len(word)+1
+            dp[hi+1]|=dp[lo]
         res+=dp[-1]
     return res
 
 
 def part2(data):
     a, b = data.split("\n\n")
-    a = a.split(", ")
-    T= lambda: defaultdict(T)
-    trie = T()
-    for word in a:
-        reduce(dict.__getitem__,word,trie)["is_word"]=True
-    b=b.split("\n")
     res=0
-    for line in b:
-        dp=[1]+[0]*len(line)
-        for i in range(len(line)):
-            cur=trie
-            for j in range(i, len(line)):
-                if line[j] not in cur:
-                    break
-                else:
-                    cur=cur[line[j]]
-                if cur["is_word"]:
-                    dp[j+1]+=dp[i]
+    automaton = ahocorasick.Automaton()
+    for word in a.split(", "):
+        automaton.add_word(word,(len(word),word))
+    automaton.make_automaton()
+    for line in b.split("\n"):
+        dp = [1]+[0]*len(line)
+        for hi , (_,word) in automaton.iter(line):
+            lo = hi - len(word)+1
+            dp[hi+1]+=dp[lo]
         res+=dp[-1]
     return res
 
