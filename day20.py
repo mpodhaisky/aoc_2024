@@ -68,16 +68,9 @@ def part2(data):
                 seen[(r+dr,c+dc)]=step+1
     cheats=set()
     for r, c in seen:
-        cur_q=[(0,r,c)]
-        cur_seen={(r,c)}
-        for steps, dr, dc in cur_q:
-            if abs(r-dr)+abs(c-dc) <= 20 and (dr,dc) in seen and seen[(dr,dc)]-seen[(r,c)]-(abs(r-dr)+abs(c-dc)) >=100:
+        for dr, dc in seen:
+            if abs(r-dr)+abs(c-dc) <= 20 and seen[(dr,dc)]-seen[(r,c)]-(abs(r-dr)+abs(c-dc)) >=100:
                 cheats.add((r,c,dr,dc))
-            if steps < 20:
-                for ddr, ddc in adj4:
-                    if (dr+ddr,dc+ddc) not in cur_seen:
-                        cur_seen.add((dr+ddr,dc+ddc))
-                        cur_q.append((steps+1,dr+ddr,dc+ddc))
             
     return len(cheats)
 
