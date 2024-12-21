@@ -42,8 +42,12 @@ def part1(data):
         return res
 
     @cache
-    def dfs(start,end):
-        return bfs(start,end,grid2)
+    def dfs(depth,alignment):
+        if depth ==0: return min(len(n) for n in alignment)
+        res=0
+        for start, end in zip("A"+alignment, alignment):
+            res+= min(dfs(depth-1,n+"A") for n in bfs(start,end,grid2))
+        return res
 
     total=0
     for line in data.split("\n"):
@@ -55,20 +59,7 @@ def part1(data):
                     for k in chunks[3]:
                         alignments.append(l+"A"+m+"A"+n+"A"+k+"A")
         
-        miniminsofar=float("inf")
-        for alignment in alignments:
-            foofoo=0
-            for start, end in zip("A"+alignment,alignment):
-                first_level = [n+"A" for n in dfs(start,end)]
-                minsofar=float("inf")
-                for alignment in first_level:
-                    foo=0
-                    for start, end in zip("A"+alignment,alignment):
-                        foo+=min(len(n+"A") for n in dfs(start,end))
-                    minsofar=min(foo,minsofar)
-                foofoo+=minsofar
-            miniminsofar=min(miniminsofar,foofoo)
-        total+=miniminsofar*int(line[:-1])
+        total+=min(dfs(3,alignment) for alignment in alignments)*int(line[:-1])
 
     return total
         
