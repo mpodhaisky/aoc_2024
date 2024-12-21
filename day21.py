@@ -78,7 +78,52 @@ def part1(data):
 
 
 def part2(data):
-    pass
+    grid1=["789","456","123","B0A"]
+    grid2=["B^A","<v>"]
+    trans={(-1,0):"^",(1,0):"v",(0,1):">",(0,-1):"<"}
+    def bfs(start, end,grid):
+        if start == end: return [""]
+        M,N = len(grid), len(grid[0])
+        sr=sc=tr=tc=None
+        for r in range(M):
+            for c in range(N):
+                if grid[r][c]==start:
+                    sr,sc = r,c
+                if grid[r][c]==end:
+                    tr,tc=r,c
+        q=[("",sr,sc)]
+        res=[]
+        for word, r, c in q:
+            if (r,c)==(tr,tc):
+                break
+            for dr, dc in adj4:
+                if 0<=r+dr<M and 0<=c+dc<N and grid[r+dr][c+dc]!="B":
+                    q.append((word+trans[(dr,dc)],r+dr,c+dc))
+                if (r+dr,c+dc)==(tr,tc):
+                    res.append(word+trans[(dr,dc)])
+        return res
+
+    @cache
+    def dfs(depth,alignment):
+        if depth ==0: return min(len(n) for n in alignment)
+        res=0
+        for start, end in zip("A"+alignment, alignment):
+            res+= min(dfs(depth-1,n+"A") for n in bfs(start,end,grid2))
+        return res
+
+    total=0
+    for line in data.split("\n"):
+        chunks=[bfs(start,end,grid1) for start, end in zip("A"+line,line)]
+        alignments=[]
+        for l in chunks[0]:
+            for m in chunks[1]:
+                for n in chunks[2]:
+                    for k in chunks[3]:
+                        alignments.append(l+"A"+m+"A"+n+"A"+k+"A")
+        
+        total+=min(dfs(26,alignment) for alignment in alignments)*int(line[:-1])
+
+    return total
 
 
 if __name__ == "__main__":
