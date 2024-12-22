@@ -15,107 +15,46 @@ trans = {(-1,0):"^",(0,1):">",(0,-1):"<",(1,0):"v"}
 def nums(line):
     return list(map(int,re.findall(r'-?\d+', line)))
 
+adj1 =  {('7', '7'): ['A'], ('7', '8'): ['>A'], ('7', '9'): ['>>A'], ('7', '4'): ['vA'], ('7', '5'): ['>vA', 'v>A'], ('7', '6'): ['>>vA', '>v>A', 'v>>A'], ('7', '1'): ['vvA'], ('7', '2'): ['>vvA', 'v>vA', 'vv>A'], ('7', '3'): ['>>vvA', '>v>vA', '>vv>A', 'v>>vA', 'v>v>A', 'vv>>A'], ('7', '0'): ['>vvvA', 'v>vvA', 'vv>vA'], ('7', 'A'): ['>>vvvA', '>v>vvA', '>vv>vA', '>vvv>A', 'v>>vvA', 'v>v>vA', 'v>vv>A', 'vv>>vA', 'vv>v>A'], ('8', '7'): ['<A'], ('8', '8'): ['A'], ('8', '9'): ['>A'], ('8', '4'): ['v<A', '<vA'], ('8', '5'): ['vA'], ('8', '6'): ['>vA', 'v>A'], ('8', '1'): ['vv<A', 'v<vA', '<vvA'], ('8', '2'): ['vvA'], ('8', '3'): ['>vvA', 'v>vA', 'vv>A'], ('8', '0'): ['vvvA'], ('8', 'A'): ['>vvvA', 'v>vvA', 'vv>vA', 'vvv>A'], ('9', '7'): ['<<A'], ('9', '8'): ['<A'], ('9', '9'): ['A'], ('9', '4'): ['v<<A', '<v<A', '<<vA'], ('9', '5'): ['v<A', '<vA'], ('9', '6'): ['vA'], ('9', '1'): ['vv<<A', 'v<v<A', 'v<<vA', '<vv<A', '<v<vA', '<<vvA'], ('9', '2'): ['vv<A', 'v<vA', '<vvA'], ('9', '3'): ['vvA'], ('9', '0'): ['vvv<A', 'vv<vA', 'v<vvA', '<vvvA'], ('9', 'A'): ['vvvA'], ('4', '7'): ['^A'], ('4', '8'): ['^>A', '>^A'], ('4', '9'): ['^>>A', '>^>A', '>>^A'], ('4', '4'): ['A'], ('4', '5'): ['>A'], ('4', '6'): ['>>A'], ('4', '1'): ['vA'], ('4', '2'): ['>vA', 'v>A'], ('4', '3'): ['>>vA', '>v>A', 'v>>A'], ('4', '0'): ['>vvA', 'v>vA'], ('4', 'A'): ['>>vvA', '>v>vA', '>vv>A', 'v>>vA', 'v>v>A'], ('5', '7'): ['^<A', '<^A'], ('5', '8'): ['^A'], ('5', '9'): ['^>A', '>^A'], ('5', '4'): ['<A'], ('5', '5'): ['A'], ('5', '6'): ['>A'], ('5', '1'): ['v<A', '<vA'], ('5', '2'): ['vA'], ('5', '3'): ['>vA', 'v>A'], ('5', '0'): ['vvA'], ('5', 'A'): ['>vvA', 'v>vA', 'vv>A'], ('6', '7'): ['^<<A', '<^<A', '<<^A'], ('6', '8'): ['^<A', '<^A'], ('6', '9'): ['^A'], ('6', '4'): ['<<A'], ('6', '5'): ['<A'], ('6', '6'): ['A'], ('6', '1'): ['v<<A', '<v<A', '<<vA'], ('6', '2'): ['v<A', '<vA'], ('6', '3'): ['vA'], ('6', '0'): ['vv<A', 'v<vA', '<vvA'], ('6', 'A'): ['vvA'], ('1', '7'): ['^^A'], ('1', '8'): ['^^>A', '^>^A', '>^^A'], ('1', '9'): ['^^>>A', '^>^>A', '^>>^A', '>^^>A', '>^>^A', '>>^^A'], ('1', '4'): ['^A'], ('1', '5'): ['^>A', '>^A'], ('1', '6'): ['^>>A', '>^>A', '>>^A'], ('1', '1'): ['A'], ('1', '2'): ['>A'], ('1', '3'): ['>>A'], ('1', '0'): ['>vA'], ('1', 'A'): ['>>vA', '>v>A'], ('2', '7'): ['^^<A', '^<^A', '<^^A'], ('2', '8'): ['^^A'], ('2', '9'): ['^^>A', '^>^A', '>^^A'], ('2', '4'): ['^<A', '<^A'], ('2', '5'): ['^A'], ('2', '6'): ['^>A', '>^A'], ('2', '1'): ['<A'], ('2', '2'): ['A'], ('2', '3'): ['>A'], ('2', '0'): ['vA'], ('2', 'A'): ['>vA', 'v>A'], ('3', '7'): ['^^<<A', '^<^<A', '^<<^A', '<^^<A', '<^<^A', '<<^^A'], ('3', '8'): ['^^<A', '^<^A', '<^^A'], ('3', '9'): ['^^A'], ('3', '4'): ['^<<A', '<^<A', '<<^A'], ('3', '5'): ['^<A', '<^A'], ('3', '6'): ['^A'], ('3', '1'): ['<<A'], ('3', '2'): ['<A'], ('3', '3'): ['A'], ('3', '0'): ['v<A', '<vA'], ('3', 'A'): ['vA'], ('0', '7'): ['^^^<A', '^^<^A', '^<^^A'], ('0', '8'): ['^^^A'], ('0', '9'): ['^^^>A', '^^>^A', '^>^^A', '>^^^A'], ('0', '4'): ['^^<A', '^<^A'], ('0', '5'): ['^^A'], ('0', '6'): ['^^>A', '^>^A', '>^^A'], ('0', '1'): ['^<A'], ('0', '2'): ['^A'], ('0', '3'): ['^>A', '>^A'], ('0', '0'): ['A'], ('0', 'A'): ['>A'], ('A', '7'): ['^^^<<A', '^^<^<A', '^^<<^A', '^<^^<A', '^<^<^A', '^<<^^A', '<^^^<A', '<^^<^A', '<^<^^A'], ('A', '8'): ['^^^<A', '^^<^A', '^<^^A', '<^^^A'], ('A', '9'): ['^^^A'], ('A', '4'): ['^^<<A', '^<^<A', '^<<^A', '<^^<A', '<^<^A'], ('A', '5'): ['^^<A', '^<^A', '<^^A'], ('A', '6'): ['^^A'], ('A', '1'): ['^<<A', '<^<A'], ('A', '2'): ['^<A', '<^A'], ('A', '3'): ['^A'], ('A', '0'): ['<A'], ('A', 'A'): ['A']}
+adj2 =  {('^', '^'): ['A'], ('^', 'A'): ['>A'], ('^', '<'): ['v<A'], ('^', 'v'): ['vA'], ('^', '>'): ['>vA', 'v>A'], ('A', '^'): ['<A'], ('A', 'A'): ['A'], ('A', '<'): ['v<<A', '<v<A'], ('A', 'v'): ['v<A', '<vA'], ('A', '>'): ['vA'], ('<', '^'): ['>^A'], ('<', 'A'): ['>^>A', '>>^A'], ('<', '<'): ['A'], ('<', 'v'): ['>A'], ('<', '>'): ['>>A'], ('v', '^'): ['^A'], ('v', 'A'): ['^>A', '>^A'], ('v', '<'): ['<A'], ('v', 'v'): ['A'], ('v', '>'): ['>A'], ('>', '^'): ['^<A', '<^A'], ('>', 'A'): ['^A'], ('>', '<'): ['<<A'], ('>', 'v'): ['<A'], ('>', '>'): ['A']}
+
 def part1(data):
-    grid1=["789","456","123","B0A"]
-    grid2=["B^A","<v>"]
-    trans={(-1,0):"^",(1,0):"v",(0,1):">",(0,-1):"<"}
-    def bfs(start, end,grid):
-        if start == end: return [""]
-        M,N = len(grid), len(grid[0])
-        sr=sc=tr=tc=None
-        for r in range(M):
-            for c in range(N):
-                if grid[r][c]==start:
-                    sr,sc = r,c
-                if grid[r][c]==end:
-                    tr,tc=r,c
-        q=[("",sr,sc)]
-        res=[]
-        for word, r, c in q:
-            if (r,c)==(tr,tc):
-                break
-            for dr, dc in adj4:
-                if 0<=r+dr<M and 0<=c+dc<N and grid[r+dr][c+dc]!="B":
-                    q.append((word+trans[(dr,dc)],r+dr,c+dc))
-                if (r+dr,c+dc)==(tr,tc):
-                    res.append(word+trans[(dr,dc)])
-        return res
-
     @cache
     def dfs(depth,alignment):
-        if depth ==0: return min(len(n) for n in alignment)
+        if depth ==4: return min(len(n) for n in alignment)
         res=0
         for start, end in zip("A"+alignment, alignment):
-            res+= min(dfs(depth-1,n+"A") for n in bfs(start,end,grid2))
+            res+= min(dfs(depth+1,n) for n in (adj1[(start,end)] if depth==0 else adj2[(start,end)]))
         return res
 
     total=0
     for line in data.split("\n"):
-        chunks=[bfs(start,end,grid1) for start, end in zip("A"+line,line)]
-        alignments=[]
-        for l in chunks[0]:
-            for m in chunks[1]:
-                for n in chunks[2]:
-                    for k in chunks[3]:
-                        alignments.append(l+"A"+m+"A"+n+"A"+k+"A")
-        
-        total+=min(dfs(3,alignment) for alignment in alignments)*int(line[:-1])
+        # dfs includes:
+        # - one enhancement on grid1
+        # - 2 enhancement on grid2
+        # - one len calculation
+        total+=dfs(0,line)*int(line[:-1])
 
     return total
         
-        
-            
-        
-
-
 def part2(data):
-    grid1=["789","456","123","B0A"]
-    grid2=["B^A","<v>"]
-    trans={(-1,0):"^",(1,0):"v",(0,1):">",(0,-1):"<"}
-    def bfs(start, end,grid):
-        if start == end: return [""]
-        M,N = len(grid), len(grid[0])
-        sr=sc=tr=tc=None
-        for r in range(M):
-            for c in range(N):
-                if grid[r][c]==start:
-                    sr,sc = r,c
-                if grid[r][c]==end:
-                    tr,tc=r,c
-        q=[("",sr,sc)]
-        res=[]
-        for word, r, c in q:
-            if (r,c)==(tr,tc):
-                break
-            for dr, dc in adj4:
-                if 0<=r+dr<M and 0<=c+dc<N and grid[r+dr][c+dc]!="B":
-                    q.append((word+trans[(dr,dc)],r+dr,c+dc))
-                if (r+dr,c+dc)==(tr,tc):
-                    res.append(word+trans[(dr,dc)])
-        return res
-
     @cache
     def dfs(depth,alignment):
-        if depth ==0: return min(len(n) for n in alignment)
+        if depth ==27: return min(len(n) for n in alignment)
         res=0
         for start, end in zip("A"+alignment, alignment):
-            res+= min(dfs(depth-1,n+"A") for n in bfs(start,end,grid2))
+            res+= min(dfs(depth+1,n) for n in (adj1[(start,end)] if depth==0 else adj2[(start,end)]))
         return res
 
     total=0
     for line in data.split("\n"):
-        chunks=[bfs(start,end,grid1) for start, end in zip("A"+line,line)]
-        alignments=[]
-        for l in chunks[0]:
-            for m in chunks[1]:
-                for n in chunks[2]:
-                    for k in chunks[3]:
-                        alignments.append(l+"A"+m+"A"+n+"A"+k+"A")
-        
-        total+=min(dfs(26,alignment) for alignment in alignments)*int(line[:-1])
+        # dfs includes:
+        # - one enhancement on grid1
+        # - 2 enhancement on grid2
+        # - one len calculation
+        total+=dfs(0,line)*int(line[:-1])
 
     return total
-
 
 if __name__ == "__main__":
     data = open(0).read().rstrip()
