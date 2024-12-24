@@ -48,14 +48,14 @@ def part2(data):
     wires , rules = data.split("\n\n")
     adj = {}
     name={}
-    value=Counter()
+    
+    terminals=set()
     for conn in wires.split("\n"):
-        a, b = conn.split(": ")
-        value[a] = int(b)
+        terminals.add(conn.split(": ")[0])
+
     for line in rules.split("\n"):
         a, b = line.split(" -> ")
         fr, op, to = a.split()
-        fr, to = sorted((fr,to))
         adj[b] = (op,fr, to)
         name[(op,fr, to)]=b
         name[(op,to,fr)]=b
@@ -76,7 +76,7 @@ def part2(data):
 
 
     def dfs(n,m):
-        if n in value or m in value:return n==m
+        if n in terminals or m in terminals:return n==m
         op1,l1, r1 = real_adj[n]
         op2,l2,r2 = adj[m]
         return op1==op2 and ((dfs(l1,l2) and dfs(r1,r2)) or(dfs(l1,r2) and dfs(r1,l2)))
