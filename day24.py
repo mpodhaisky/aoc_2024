@@ -48,7 +48,7 @@ def part2(data):
     wires , rules = data.split("\n\n")
     adj = {}
     name={}
-    
+
     terminals=set()
     for conn in wires.split("\n"):
         terminals.add(conn.split(": ")[0])
@@ -61,19 +61,17 @@ def part2(data):
         name[(op,to,fr)]=b
     
    
-    real_adj={"z00":("XOR", "x00","y00"),"c0":("AND", "x00","y00")}
+    real_adj={"z00":("XOR", "x00","y00"),"c00":("AND", "x00","y00")}
 
     for i in range(1,46):
-        xxory = ("XOR","x"+str(i).zfill(2),"y"+str(i).zfill(2))
-        real_adj["xor"+str(i)]=xxory
-        xandy =("AND","x"+str(i).zfill(2),"y"+str(i).zfill(2))
-        real_adj["and"+str(i)]=xandy
-        real_adj["z"+str(i).zfill(2)]=("XOR","xor"+str(i),"c"+str(i-1))
-        left_term = ("AND","c"+str(i-1),"xor"+str(i))
-        real_adj["leftterm"+str(i)]=left_term
-        real_adj["c"+str(i)]=("OR","leftterm"+str(i),"and"+str(i))
-
-
+        xxory = ("XOR",f"x{i:02}",f"y{i:02}")
+        real_adj[f"xor{i:02}"]=xxory
+        xandy =("AND",f"x{i:02}",f"y{i:02}")
+        real_adj[f"and{i:02}"]=xandy
+        real_adj[f"z{i:02}"]=("XOR",f"xor{i:02}",f"c{(i-1):02}")
+        left_term = ("AND",f"c{(i-1):02}",f"xor{i:02}")
+        real_adj[f"leftterm{i:02}"]=left_term
+        real_adj[f"c{i:02}"]=("OR",f"leftterm{i:02}",f"and{i:02}")
 
     def dfs(n,m):
         if n in terminals or m in terminals:return n==m
